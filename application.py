@@ -2,9 +2,10 @@ from flask import Flask, request, jsonify
 import pyodbc
 import json
 import requests
+import os
 
 app = Flask(__name__)
-port = '1433'
+port = int(os.environ.get(['PORT']))
 
 @app.route('/',methods=['POST'])
 def index():
@@ -40,5 +41,5 @@ def errors():
   print(json.loads(request.get_data())) 
   return jsonify(status=200)
 
-app.run(port=port)
+app.run(port=port, host="0.0.0.0")
 
