@@ -1,7 +1,10 @@
 from flask import Flask, request, jsonify
 import pyodbc
 import json
+import requests
+
 app = Flask(__name__)
+port = '5000'
 
 @app.route('/',methods=['POST'])
 def index():
@@ -27,7 +30,7 @@ def index():
     return jsonnify(
         status=200,
         replies=[{
-            'type':'text'
+            'type':'text',
             'content': 'CustomerID: %s,\nName: %f,\nLocation: %f,\nEmail: %f.' % (customerid, thislist.json()['Name'], thislist.json()['Location'], thislis.json()['Email'])
         }]    
     )
@@ -37,5 +40,5 @@ def errors():
   print(json.loads(request.get_data())) 
   return jsonify(status=200)
 
-app.run(port=port)
+app.run(port=port, host="0.0.0.0")
 
