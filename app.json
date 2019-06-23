@@ -1,0 +1,14 @@
+{
+  "name": "Cyclo bot",
+  "description": "The server side for Cyclo.",
+  "image": "heroku/python",
+  "repository": "https://github.com/hpkhanhloc/CYCLO",
+  "keywords": ["python", "flask" ],
+  "addons": [ "heroku-postgresql" ],
+  "environments": {
+    "test": {
+      "scripts": {
+        "test": "application.py test"
+      }
+    }
+  }
