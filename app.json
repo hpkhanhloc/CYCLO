@@ -8,7 +8,7 @@
   "environments": {
     "test": {
       "scripts": {
-        "test": "application.py test"
+        "test": "server.py test"
       }
     }
   }
