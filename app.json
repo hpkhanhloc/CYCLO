@@ -1,8 +1,8 @@
 {
-  "name": "Cyclo bot",
-  "description": "The server side for Cyclo.",
+  "name": "Sato crypto bot",
+  "description": "The server side for Sato.",
   "image": "heroku/python",
-  "repository": "https://github.com/hpkhanhloc/CYCLO",
+  "repository": "https://github.com/Ahirice/sato",
   "keywords": ["python", "flask" ],
   "addons": [ "heroku-postgresql" ],
   "environments": {
@@ -12,3 +12,4 @@
       }
     }
   }
+}
