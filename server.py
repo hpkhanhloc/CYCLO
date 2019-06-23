@@ -29,13 +29,13 @@ def index():
         thislist.append(x)
         row = cursor.fetchone()
     j = json.dumps(thislist)
-    return jsonnify(
-        status=200,
-        replies=[{
-            'type':'text',
-            'content': 'CustomerID: %s,\nName: %f,\nLocation: %f,\nEmail: %f.' % (customerid, j.json()['Name'], j.json()['Location'], j.json()['Email'])
-        }]    
-    )
+    return j
+        #status=200,
+        #replies=[{
+        #    'type':'text',
+        #    'content': 'CustomerID: %s,\nName: %f,\nLocation: %f,\nEmail: %f.' % (customerid, j.json()['Name'], j.json()['Location'], j.json()['Email'])
+        #}]    
+    #)
 
 @app.route('/errors', methods=['POST']) 
 def errors(): 
