@@ -5,7 +5,7 @@ import requests
 import os
 
 app = Flask(__name__)
-port = int(os.environ.get(['PORT']))
+port = int(os.environ['PORT'])
 
 @app.route('/',methods=['POST'])
 def index():
@@ -32,7 +32,7 @@ def index():
         status=200,
         replies=[{
             'type':'text',
-            'content': 'CustomerID: %s,\nName: %f,\nLocation: %f,\nEmail: %f.' % (customerid, thislist.json()['Name'], thislist.json()['Location'], thislis.json()['Email'])
+            'content': 'CustomerID: %s,\nName: %f,\nLocation: %f,\nEmail: %f.' % (customerid, j.json()['Name'], j.json()['Location'], j.json()['Email'])
         }]    
     )
 
