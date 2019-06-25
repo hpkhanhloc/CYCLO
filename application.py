@@ -32,7 +32,7 @@ def index():
         status=200,
         replies=[{
             'type':'text',
-            'content': 'CustomerID: %s,\nFirst Name: %s,\nLast Name: %s,\nAddress: %s,\nPhone: %s,\nEmail: %s' % (customerid, r['firstname'], r['lastname'], r['address'],r['phone'],r['email']),
+            'content': 'CustomerID: %s \nFirst Name: %s \nLast Name: %s \nAddress: %s \nPhone: %s \nEmail: %s' % (r['id'], r['firstname'], r['lastname'], r['address'],r['phone'],r['email']),
         }]    
     )
 
