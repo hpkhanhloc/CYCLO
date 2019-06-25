@@ -5,10 +5,10 @@ import requests
 import os
 
 app = Flask(__name__)
-#port = int(os.environ['PORT'])
-#print(port)
+port = int(os.environ['PORT'])
+print(port)
 
-@app.route('/')
+@app.route('/',methods=['POST'])
 def index():
     server = 'cyclo.database.windows.net'
     database = 'TutorialDB'
@@ -18,7 +18,7 @@ def index():
     cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
     cursor = cnxn.cursor()
     #Fetch the ID
-    #data = json.loads(request.get_data().decode('utf-8'))
+    data = json.loads(request.get_data().decode('utf-8'))
     customerid = int(2)
     #Sample select query
     cursor.execute("SELECT * FROM dbo.Customers WHERE CustomerId=2;") 
@@ -29,12 +29,11 @@ def index():
         thislist.append(x)
         row = cursor.fetchone()
     j = json.dumps(thislist)
-    r = json.loads(j)
     return jsonify(
         status=200,
         replies=[{
             'type':'text',
-            'content': 'CustomerID: %s,\nName: %f,\nLocation: %f,\nEmail: %f.' % (customerid, r['Name'], r['Location'], r['Email'])
+            'content': 'CustomerID: %s,\nName: %s,\nLocation: %s,\nEmail: %s.' % (customerid, j.json()['Name'], j.json()['Location'], r.json()['Email'])
         }]    
     )
 
@@ -43,5 +42,5 @@ def errors():
   print(json.loads(request.get_data())) 
   return jsonify(status=200)
 
-app.run()
+app.run(port=port=, host='0.0.0.0')
 
