@@ -39,5 +39,5 @@ def errors():
   print(json.loads(request.get_data())) 
   return jsonify(status=200)
 
-app.run()
+app.run(host='0.0.0.0)
 
