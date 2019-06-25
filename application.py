@@ -45,7 +45,7 @@ def order():
     cursor = dataconn()
     #Fetch the ID
     data = json.loads(request.get_data().decode('utf-8'))
-    orderid = data['nlp']['entities']['temperature'][0]['raw']
+    orderid = data['nlp']['entities']['number'][0]['raw']
     #Query
     cursor.execute("""SELECT orders.OrderID, customers.FirstName, products.ProductDescription, orders.OrderDate, orders.OrderStatus 
     from orders,customers,products 
