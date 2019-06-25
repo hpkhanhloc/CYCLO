@@ -38,26 +38,6 @@ def index():
         }]    
     )
 
-@app.route('/orders',methods=['POST'])
-def index():
-    #Fetch the ID
-    data = json.loads(request.get_data().decode('utf-8'))
-    orderid = data['nlp']['entities']['number'][0]['raw']
-    #Sample select query
-    cursor.execute("SELECT orders.OrderID, customer.FirstName, product.[Description], orders.Order_Date, orders.[Status] from orders,customer,product where orderid = \'"+orderid+"\'and orders.CustomerID = customer.CustomerIDand orders.ProductID = product.ProductID;) 
-    row = cursor.fetchone()
-    while row:
-        x = {"id":str(row[0]),"name":str(row[1]),"product":str(row[2]),"date":str(row[3]),"status":str(row[4])}
-        row = cursor.fetchone()
-    j = json.dumps(x)
-    r = json.loads(j)
-    return jsonify(
-        status=200,
-        replies=[{
-            'type':'text',
-            'content': 'OrderID: %s,\nName: %s,\nProduct: %s,\nOrder Date: %s,\nStatus: %s' % (orderid, r['name'], r['product'], r['date'],r['status']),
-        }]    
-    ) 
 
 @app.route('/errors', methods=['POST']) 
 def errors(): 
