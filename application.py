@@ -18,7 +18,7 @@ def dataconn():
     return cursor
 
 @app.route('/customer',methods=['POST'])
-def index():
+def customer():
     cursor = dataconn()
     #Fetch the ID
     data = json.loads(request.get_data().decode('utf-8'))
@@ -41,7 +41,7 @@ def index():
     )
 
 @app.route('/order',methods=['POST'])
-def index():
+def order():
     cursor = dataconn()
     #Fetch the ID
     data = json.loads(request.get_data().decode('utf-8'))
