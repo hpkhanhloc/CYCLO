@@ -21,7 +21,7 @@ def index():
     data = json.loads(request.get_data().decode('utf-8'))
     customerid = data['nlp']['entities']['number'][0]['raw']
     #Sample select query
-    cursor.execute("SELECT * FROM customers WHERE CustomerID ="+customerid+";") 
+    cursor.execute("SELECT * FROM customer WHERE CustomerID ="+customerid+";") 
     row = cursor.fetchone()
     while row:
         x = {"id":str(row[0]),"firstname":str(row[1]),"lastname":str(row[2]),"address":str(row[3]),"phone":str(row[4]),"email":str(row[5])}
