@@ -5,7 +5,7 @@ import requests
 import os
 
 app = Flask(__name__)
-port = int(os.environ['PORT'])
+#port = int(os.environ['PORT'])
 
 @app.route('/',methods=['POST'])
 def index():
@@ -40,5 +40,5 @@ def errors():
   print(json.loads(request.get_data())) 
   return jsonify(status=200)
 
-app.run(port=port, host='0.0.0.0')
+app.run(host='0.0.0.0')
 
