@@ -7,7 +7,8 @@ import os
 app = Flask(__name__)
 port = '443'
 
-def conndata():
+@app.route('/',methods=['POST'])
+def index():
     server = 'cyclo.database.windows.net'
     database = 'CYCLO'
     username = 'cycloadmin'
@@ -16,10 +17,6 @@ def conndata():
     cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
     cursor = cnxn.cursor()
     return cursor
-
-@app.route('/',methods=['POST'])
-def index():
-    conndata()
     #Fetch the ID
     data = json.loads(request.get_data().decode('utf-8'))
     customerid = data['nlp']['entities']['number'][0]['raw']
