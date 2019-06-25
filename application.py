@@ -20,7 +20,7 @@ def index():
     data = json.loads(request.get_data().decode('utf-8'))
     customerid = data['nlp']['entities']['number'][0]['raw']
     #Sample select query
-    cursor.execute("SELECT * FROM dbo.Customers WHERE CustomerId=2;") 
+    cursor.execute("SELECT * FROM dbo.Customers WHERE CustomerId ="+customerid+";") 
     row = cursor.fetchone()
     while row:
         x = {"id":str(row[0]),"name":str(row[1]),"location":str(row[2]),"mail":str(row[3])}
