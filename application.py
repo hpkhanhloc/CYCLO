@@ -23,7 +23,7 @@ def index():
     #Fetch the ID
     data = json.loads(request.get_data().decode('utf-8'))
     customerid = data['nlp']['entities']['number'][0]['raw']
-    #Sample select query
+    #Query
     cursor.execute("SELECT * FROM customer WHERE CustomerID ="+customerid+";") 
     row = cursor.fetchone()
     while row:
@@ -31,6 +31,7 @@ def index():
         row = cursor.fetchone()
     j = json.dumps(x)
     r = json.loads(j)
+    #Put infor to chatbot
     return jsonify(
         status=200,
         replies=[{
@@ -39,6 +40,31 @@ def index():
         }]    
     )
 
+@app.route('/order',methods=['POST'])
+def index():
+    cursor = dataconn()
+    #Fetch the ID
+    data = json.loads(request.get_data().decode('utf-8'))
+    orderid = data['nlp']['entities']['number'][0]['raw']
+    #Query
+    cursor.execute("""SELECT orders.OrderID, customers.FirstName, products.ProductDescription, orders.OrderDate, orders.OrderStatus 
+    from orders,customers,products 
+    where orderid = \'"""+orderid+"""\' and orders.CustomerID = customers.CustomerID 
+    and orders.ProductID = products.ProductID;""") 
+    row = cursor.fetchone()
+    while row:
+        x = {"id":str(row[0]),"name":str(row[1]),"product":str(row[2]),"date":str(row[3]),"status":str(row[4])}
+        row = cursor.fetchone()
+    j = json.dumps(x)
+    r = json.loads(j)
+    #Put infor to chatbot
+    return jsonify(
+        status=200,
+        replies=[{
+            'type':'text',
+            'content': 'OrderID: %s \nName: %s \nProduct: %s \nOrder Date: %s \nStatus: %s' % (r['id'], r['name'], r['product'], r['date'],r['status']) 
+        }]
+    )
 
 @app.route('/errors', methods=['POST']) 
 def errors(): 
