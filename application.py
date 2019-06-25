@@ -29,11 +29,12 @@ def index():
         thislist.append(x)
         row = cursor.fetchone()
     j = json.dumps(thislist)
+    r = json.loads(j)
     return jsonify(
         status=200,
         replies=[{
             'type':'text',
-            'content': 'CustomerID: %s,\nName: %s,\nLocation: %s,\nEmail: %s.' % (customerid, j.json()['Name'], j.json()['Location'], r.json()['Email'])
+            'content': 'CustomerID: %s,\nName: %s,\nLocation: %s,\nEmail: %s.' % (customerid, r['Name'], r['Location'], r['Email'])
         }]    
     )
 
@@ -41,6 +42,6 @@ def index():
 def errors(): 
   print(json.loads(request.get_data())) 
   return jsonify(status=200)
-
+  
 app.run(port=port=, host='0.0.0.0')
 
