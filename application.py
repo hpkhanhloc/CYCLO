@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 port = '443'
 
-@app.route('/',methods=['POST'])
+@app.route('/customer',methods=['POST'])
 def index():
     server = 'cyclo.database.windows.net'
     database = 'CYCLO'
