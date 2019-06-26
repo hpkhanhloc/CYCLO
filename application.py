@@ -93,7 +93,7 @@ def product():
         status=200,
         replies=[{
             'type':'text',
-            'content': 'We have %i products in %s category:\n %s' % (len(r), category, content) 
+            'content': 'We have %i products in %s category:\n%s' % (len(r), category, content) 
         }]
     )
 
