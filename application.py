@@ -66,6 +66,37 @@ def order():
         }]
     )
 
+@app.route('/product',methods=['POST'])
+def product():
+    cursor = dataconn()
+    #Fetch the ID
+    data = json.loads(request.get_data().decode('utf-8'))
+    category = data['nlp']['entities']['productname'][0]['raw']
+    #Query
+    cursor.execute("SELECT ProductDescription FROM products where Category =\'"+category+"\';")
+    row = cursor.fetchone()
+    thislist=[]
+    while row:
+        x = {"descript":str(row[0])}
+        thislist.append(x)
+        row = cursor.fetchone()
+    j = json.dumps(thislist)
+    r = json.loads(j)
+    content = ''
+    for i in r:
+        if i == r[-1]:
+            content = content + (i['descript'])
+        else:
+            content = content + i['descript'] + '\n'
+    #Put infor to chatbot
+    return jsonify(
+        status=200,
+        replies=[{
+            'type':'text',
+            'content': 'We have %i products in %s category:\n %s' % (len(r), category, content) 
+        }]
+    )
+
 @app.route('/errors', methods=['POST']) 
 def errors(): 
   print(json.loads(request.get_data())) 
