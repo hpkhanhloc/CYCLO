@@ -69,7 +69,7 @@ def order():
 @app.route('/product',methods=['POST'])
 def product():
     cursor = dataconn()
-    #Fetch the ID
+    #Fetch the category
     data = json.loads(request.get_data().decode('utf-8'))
     category = data['nlp']['entities']['productname'][0]['raw']
     #Query
@@ -96,6 +96,22 @@ def product():
             'content': 'We have %i products in %s category:\n%s' % (len(r), category, content) 
         }]
     )
+
+@app.route('weather',methods=['POST'])
+def weather():
+    #Fetch the location
+    data = json.loads(request.get_data().decode('utf-8'))
+    location = data['nlp']['entities']['location'][0]['raw']
+    #Fect the weather information
+    r = requests.get("https://api.openweathermap.org/data/2.5/weather?q="+location+"&units=metric&appid=63879a9b19bc9fa80e75ca0adc836c7e")
+    #Put infor to chatbot
+    return jsonify(
+        status=200,
+        replies=[{
+            'type': 'text',
+            'content': 'The weather in %s is %s now,\nTemperature: %8.2f%s,\nPressure: %i hPa,\nHumidity: %i%%.' % (r.json()['name'], r.json()['weather'][0]['description'],r.json()['main']['temp'],chr(176)+'C', r.json()['main']['pressure'],r.json()['main']['humidity'])
+    }]
+  )
 
 @app.route('/errors', methods=['POST']) 
 def errors(): 
