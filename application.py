@@ -97,7 +97,7 @@ def product():
         }]
     )
 
-@app.route('weather',methods=['POST'])
+@app.route('/weather',methods=['POST'])
 def weather():
     #Fetch the location
     data = json.loads(request.get_data().decode('utf-8'))
