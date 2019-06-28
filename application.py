@@ -24,23 +24,15 @@ def customer():
     data = json.loads(request.get_data().decode('utf-8'))
     customerid = data['nlp']['entities']['number'][0]['raw']
     #Query
-    cursor.execute("SELECT * FROM customers WHERE CustomerID ="+customerid+";") 
-    row = cursor.fetchone()
-    while row:
-        x = {"id":str(row[0]),"firstname":str(row[1]),"lastname":str(row[2]),"address":str(row[3]),"phone":str(row[4]),"email":str(row[5])}
+    try:
+        cursor.execute("SELECT * FROM customers WHERE CustomerID ="+customerid+";") 
         row = cursor.fetchone()
-    j = json.dumps(x)
-    r = json.loads(j)
-    #Put infor to chatbot
-    if len(r) == 0:
-        return jsonify(
-            status=200,
-            replies=[{
-                'type':'text',
-                'content': 'Your CustomerID is not valid, please try again or contact our support.'
-            }]    
-        )
-    else:
+        while row:
+            x = {"id":str(row[0]),"firstname":str(row[1]),"lastname":str(row[2]),"address":str(row[3]),"phone":str(row[4]),"email":str(row[5])}
+            row = cursor.fetchone()
+        j = json.dumps(x)
+        r = json.loads(j)
+        #Put infor to chatbot
         return jsonify(
             status=200,
             replies=[{
@@ -48,6 +40,14 @@ def customer():
                 'content': 'CustomerID: %s \nFirst Name: %s \nLast Name: %s \nAddress: %s \nPhone: %s \nEmail: %s' % (r['id'], r['firstname'], r['lastname'], r['address'],r['phone'],r['email']),
             }]    
         )
+    except:
+        return jsonify(
+                status=200,
+                replies=[{
+                    'type':'text',
+                    'content': 'Your CustomerID is not valid, please try again or contact our support.'
+                }]    
+            )
 
 @app.route('/orderbycode',methods=['POST'])
 def orderbycode():
