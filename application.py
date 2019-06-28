@@ -104,17 +104,26 @@ def product():
         content = ''
         for i in r:
             if i == r[-1]:
-                content = content + (i['descript'])
+                content = content + (r['descript'])
             else:
-                content = content + i['descript'] + '\n'
+                content = content + r['descript'] + '\n'
     #Put infor to chatbot
-        return jsonify(
-            status=200,
-            replies=[{
-                'type':'text',
-                'content': 'We have %i products in %s category:\n%s' % (len(r), category, content) 
-            }]
-        )
+        if len(r) == 0:
+            return jsonify(
+                status=200,
+                replies=[{
+                    'type':'text',
+                    'Sorry, the information provided is not sufficient. Please choose one of our categories!' 
+                }]
+            )
+        else:
+            return jsonify(
+                status=200,
+                replies=[{
+                    'type':'text',
+                    'content': 'We have %i products in %s category:\n%s' % (len(r), category, content) 
+                }]
+            )
     except:
         return jsonify(
             status=200,
@@ -157,35 +166,44 @@ def purchasehistory():
     customerid = data['nlp']['entities']['number'][0]['raw']
     #Query
     try:
-        cursor.execute("SELECT orderID, products.productdescription, orderdate, orderstatus FROM orders,products WHERE CustomerID ="+customerid+" and orders.productid = products.productid;") 
-        row = cursor.fetchone()
-        thislist=[]
-        while row:
-            x = {"orderid":str(row[0]),"product":str(row[1]),"orderdate":str(row[2]),"orderstatus":str(row[3])}
-            thislist.append(x)
+        if int(customerid) in range(100000,100999):
+            cursor.execute("SELECT orderID, products.productdescription, orderdate, orderstatus FROM orders,products WHERE CustomerID ="+customerid+" and orders.productid = products.productid;") 
             row = cursor.fetchone()
-        j = json.dumps(thislist)
-        r = json.loads(j)
-        content = ''
-        raw = ''
-        if len(r) == 0:
-            content = 'You have not ordered before.'
+            thislist=[]
+            while row:
+                x = {"orderid":str(row[0]),"product":str(row[1]),"orderdate":str(row[2]),"orderstatus":str(row[3])}
+                thislist.append(x)
+                row = cursor.fetchone()
+            j = json.dumps(thislist)
+            r = json.loads(j)
+            content = ''
+            raw = ''
+            if len(r) == 0:
+                content = 'You have not ordered before.'
+            else:
+                for i in r:
+                    if i == r[-1]:
+                        content = content + 'OrderId: '+ i['orderid'] + '\n'+ 'Product: '+ i['product'] + '\n'+ 'Orderdate: '+ i['orderdate'] + '\n'+ 'Status: '+i['orderstatus']
+                    else:
+                        raw = raw + 'OrderId: '+ i['orderid'] + '\n'+ 'Product: '+ i['product'] + '\n'+ 'Orderdate: '+ i['orderdate'] + '\n'+ 'Status: '+i['orderstatus'] + '\n'
+                        raw = raw + '\n'
+                        content = 'You have ordered %i:\n%s' % (len(r),raw)
+            #Put infor to chatbot
+            return jsonify(
+                status=200,
+                replies=[{
+                    'type':'text',
+                    'content': ('%s') % (content)
+                }]
+            )
         else:
-            for i in r:
-                if i == r[-1]:
-                    content = content + 'OrderId: '+ i['orderid'] + '\n'+ 'Product: '+ i['product'] + '\n'+ 'Orderdate: '+ i['orderdate'] + '\n'+ 'Status: '+i['orderstatus']
-                else:
-                    raw = raw + 'OrderId: '+ i['orderid'] + '\n'+ 'Product: '+ i['product'] + '\n'+ 'Orderdate: '+ i['orderdate'] + '\n'+ 'Status: '+i['orderstatus'] + '\n'
-                    raw = raw + '\n'
-                    content = 'You have ordered %i:\n%s' % (len(r),raw)
-        #Put infor to chatbot
-        return jsonify(
+           return jsonify(
             status=200,
             replies=[{
                 'type':'text',
-                'content': ('%s') % (content)
+                'content': 'Sorry, your customer ID is not correct, please try again!'
             }]
-        )
+        ) 
     except:
         return jsonify(
             status=200,
