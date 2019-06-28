@@ -113,7 +113,7 @@ def product():
                 status=200,
                 replies=[{
                     'type':'text',
-                    'Sorry, the information provided is not sufficient. Please choose one of our categories!' 
+                    'content': 'Sorry, the information provided is not sufficient. Please choose one of our categories!' 
                 }]
             )
         else:
