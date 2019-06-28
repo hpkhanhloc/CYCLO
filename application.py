@@ -120,7 +120,7 @@ def purchasehistory():
     data = json.loads(request.get_data().decode('utf-8'))
     customerid = data['nlp']['entities']['number'][0]['raw']
     #Query
-    cursor.execute("SELECT orderID, products.productdescription, orderdate, orderstatus FROM orders,product WHERE CustomerID ="+customerid+" and orders.productid = products.productid;") 
+    cursor.execute("SELECT orderID, products.productdescription, orderdate, orderstatus FROM orders,products WHERE CustomerID ="+customerid+" and orders.productid = products.productid;") 
     row = cursor.fetchone()
     thislist=[]
     while row:
