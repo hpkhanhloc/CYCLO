@@ -40,8 +40,8 @@ def customer():
         }]    
     )
 
-@app.route('/order',methods=['POST'])
-def order():
+@app.route('/orderbycode',methods=['POST'])
+def orderbycode():
     cursor = dataconn()
     #Fetch the ID
     data = json.loads(request.get_data().decode('utf-8'))
@@ -112,6 +112,43 @@ def weather():
             'content': 'The weather in %s is %s now,\nTemperature: %8.2f%s,\nPressure: %i hPa,\nHumidity: %i%%.' % (r.json()['name'], r.json()['weather'][0]['description'],r.json()['main']['temp'],chr(176)+'C', r.json()['main']['pressure'],r.json()['main']['humidity'])
     }]
   )
+
+@app.route('/purchasehistory',methods=['POST'])
+def purchasehistory():
+    cursor = dataconn()
+    #Fetch the ID
+    data = json.loads(request.get_data().decode('utf-8'))
+    customerid = data['nlp']['entities']['number'][0]['raw']
+    #Query
+    cursor.execute("SELECT orderID, products.productdescription, orderdate, orderstatus FROM orders,product WHERE CustomerID ="+customerid+" and orders.productid = products.productid;") 
+    row = cursor.fetchone()
+    thislist=[]
+    while row:
+        x = {"orderid":str(row[0]),"product":str(row[1]),"orderdate":str(row[2]),"orderstatus":str(row[3])}
+        thislist.append(x)
+        row = cursor.fetchone()
+    j = json.dumps(thislist)
+    r = json.loads(j)
+    content = ''
+    raw = ''
+    if len(r) == 0:
+        content = 'You have not ordered before.'
+    else:
+        for i in r:
+            if i == r[-1]:
+                content = content + 'OrderId: '+ i['orderid'] + '\n'+ 'Product: '+ i['product'] + '\n'+ 'Orderdate: '+ i['orderdate'] + '\n'+ 'Status: '+i['orderstatus']
+            else:
+                raw = raw + 'OrderId: '+ i['orderid'] + '\n'+ 'Product: '+ i['product'] + '\n'+ 'Orderdate: '+ i['orderdate'] + '\n'+ 'Status: '+i['orderstatus'] + '\n'
+                raw = raw + '\n'
+                content = 'You have ordered %i:\n%s' % (len(r),raw)
+    #Put infor to chatbot
+    return jsonify(
+        status=200,
+        replies=[{
+            'type':'text',
+            'content': ('%s') % (content)
+        }]
+    )
 
 @app.route('/errors', methods=['POST']) 
 def errors(): 
