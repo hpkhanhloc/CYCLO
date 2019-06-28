@@ -145,7 +145,7 @@ def weather():
             status=200,
             replies=[{
                 'type': 'text',
-                'content': 'Sorry, I can not recognize the city provided.)
+                'content': 'Sorry, I can not recognize the city provided.'
         }]
     )
 
