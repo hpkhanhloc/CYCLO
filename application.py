@@ -32,13 +32,22 @@ def customer():
     j = json.dumps(x)
     r = json.loads(j)
     #Put infor to chatbot
-    return jsonify(
-        status=200,
-        replies=[{
-            'type':'text',
-            'content': 'CustomerID: %s \nFirst Name: %s \nLast Name: %s \nAddress: %s \nPhone: %s \nEmail: %s' % (r['id'], r['firstname'], r['lastname'], r['address'],r['phone'],r['email']),
-        }]    
-    )
+    if len(r) == 0:
+        return jsonify(
+            status=200,
+            replies=[{
+                'type':'text',
+                'content': 'Your CustomerID is not valid, please try again or contact our support.'
+            }]    
+        )
+    else:
+        return jsonify(
+            status=200,
+            replies=[{
+                'type':'text',
+                'content': 'CustomerID: %s \nFirst Name: %s \nLast Name: %s \nAddress: %s \nPhone: %s \nEmail: %s' % (r['id'], r['firstname'], r['lastname'], r['address'],r['phone'],r['email']),
+            }]    
+        )
 
 @app.route('/orderbycode',methods=['POST'])
 def orderbycode():
@@ -58,13 +67,22 @@ def orderbycode():
     j = json.dumps(x)
     r = json.loads(j)
     #Put infor to chatbot
-    return jsonify(
-        status=200,
-        replies=[{
-            'type':'text',
-            'content': 'OrderID: %s \nName: %s \nProduct: %s \nOrder Date: %s \nStatus: %s' % (r['id'], r['name'], r['product'], r['date'],r['status']) 
-        }]
-    )
+    if len(r) == 0:
+        return jsonify(
+            status=200,
+            replies=[{
+                'type':'text',
+                'content': 'Your Order ID is not valid, please try again or contact our support.'
+            }]    
+        )
+    else:
+        return jsonify(
+            status=200,
+            replies=[{
+                'type':'text',
+                'content': 'OrderID: %s \nName: %s \nProduct: %s \nOrder Date: %s \nStatus: %s' % (r['id'], r['name'], r['product'], r['date'],r['status']) 
+            }]
+        )
 
 @app.route('/product',methods=['POST'])
 def product():
@@ -89,13 +107,22 @@ def product():
         else:
             content = content + i['descript'] + '\n'
     #Put infor to chatbot
-    return jsonify(
-        status=200,
-        replies=[{
-            'type':'text',
-            'content': 'We have %i products in %s category:\n%s' % (len(r), category, content) 
-        }]
-    )
+    if len(r) == 0:
+        return jsonify(
+            status=200,
+            replies=[{
+                'type':'text',
+                'content': 'Sorry! Please choose one of our categories.'
+            }]    
+        )
+    else:
+        return jsonify(
+            status=200,
+            replies=[{
+                'type':'text',
+                'content': 'We have %i products in %s category:\n%s' % (len(r), category, content) 
+            }]
+        )
 
 @app.route('/weather',methods=['POST'])
 def weather():
@@ -132,7 +159,7 @@ def purchasehistory():
     content = ''
     raw = ''
     if len(r) == 0:
-        content = 'You have not ordered before.'
+        content = 'You have not ordered before. Or your CustomerID is not valid.'
     else:
         for i in r:
             if i == r[-1]:
@@ -157,4 +184,3 @@ def errors():
 
 if __name__ == "__main__":
     app.run(port=port, host = '0.0.0.0')
-
