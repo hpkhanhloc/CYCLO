@@ -108,22 +108,13 @@ def product():
             else:
                 content = content + r['descript'] + '\n'
     #Put infor to chatbot
-        if len(r) == 0:
-            return jsonify(
-                status=200,
-                replies=[{
-                    'type':'text',
-                    'content': 'Sorry, the information provided is not sufficient. Please choose one of our categories!' 
-                }]
-            )
-        else:
-            return jsonify(
-                status=200,
-                replies=[{
-                    'type':'text',
-                    'content': 'We have %i products in %s category:\n%s' % (len(r), category, content) 
-                }]
-            )
+        return jsonify(
+            status=200,
+            replies=[{
+                'type':'text',
+                'content': 'We have %i products in %s category:\n%s' % (len(r), category, content) 
+            }]
+        )
     except:
         return jsonify(
             status=200,
