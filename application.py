@@ -104,9 +104,9 @@ def product():
         content = ''
         for i in r:
             if i == r[-1]:
-                content = content + (r['descript'])
+                content = content + (i['descript'])
             else:
-                content = content + r['descript'] + '\n'
+                content = content + i['descript'] + '\n'
     #Put infor to chatbot
         return jsonify(
             status=200,
