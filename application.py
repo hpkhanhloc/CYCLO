@@ -92,29 +92,38 @@ def product():
     category = data['nlp']['entities']['productname'][0]['raw']
     #Query
     try:
-        cursor.execute("SELECT ProductDescription FROM products where Category =\'"+category+"\';")
-        row = cursor.fetchone()
-        thislist=[]
-        while row:
-            x = {"descript":str(row[0])}
-            thislist.append(x)
+        if category in ('Touring Bike','Road Bike', 'Off Road Bike','Acessories','Electronic Bike'):
+            cursor.execute("SELECT ProductDescription FROM products where Category =\'"+category+"\';")
             row = cursor.fetchone()
-        j = json.dumps(thislist)
-        r = json.loads(j)
-        content = ''
-        for i in r:
-            if i == r[-1]:
-                content = content + (i['descript'])
-            else:
-                content = content + i['descript'] + '\n'
-    #Put infor to chatbot
-        return jsonify(
-            status=200,
-            replies=[{
-                'type':'text',
-                'content': 'We have %i products in %s category:\n%s' % (len(r), category, content) 
-            }]
-        )
+            thislist=[]
+            while row:
+                x = {"descript":str(row[0])}
+                thislist.append(x)
+                row = cursor.fetchone()
+            j = json.dumps(thislist)
+            r = json.loads(j)
+            content = ''
+            for i in r:
+                if i == r[-1]:
+                    content = content + (i['descript'])
+                else:
+                    content = content + i['descript'] + '\n'
+        #Put infor to chatbot
+            return jsonify(
+                status=200,
+                replies=[{
+                    'type':'text',
+                    'content': 'We have %i products in %s category:\n%s' % (len(r), category, content) 
+                }]
+            )
+        else:
+            return jsonify(
+                status=200,
+                replies=[{
+                    'type':'text',
+                    'content': 'Sorry, the information provided is not sufficient. Please choose one of our categories!'
+                }]
+            )
     except:
         return jsonify(
             status=200,
