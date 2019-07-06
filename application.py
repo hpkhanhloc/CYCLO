@@ -37,7 +37,7 @@ def customer():
             status=200,
             replies=[{
                 'type':'text',
-                'content': 'Hi, %s. Please input your authentication code to continue.' % (r['firstname'])
+                'content': 'Hi, %s.' % (r['firstname'])
             }]    
         )
     except:
@@ -58,15 +58,16 @@ def authentication():
     authentication = data['nlp']['entities']['number'][0]['raw']
     #Query
     try:
-        cursor.execute("SELECT authentication FROM customers WHERE CustomerID ="+customerid+";") 
+        cursor.execute("SELECT Authentication FROM customers WHERE CustomerID ="+customerid+";") 
         row = cursor.fetchone()
         while row:
             x = {"authentication":str(row[0])}
             row = cursor.fetchone()
         j = json.dumps(x)
         r = json.loads(j)
+        check = r['authentication']
         #Put infor to chatbot
-        if authentication == r['authentication']: 
+        if authentication == check: 
             return jsonify(
                 status=200,
                 replies=[{
@@ -87,7 +88,7 @@ def authentication():
                 status=200,
                 replies=[{
                     'type':'text',
-                    'content': 'Sorry, the information provided is not sufficient. Or your customer ID is not correct, please try again!'
+                    'content': 'Sorry, the information provided is not sufficient. Please try again!'
                 }]    
             )
 
