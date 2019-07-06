@@ -236,29 +236,32 @@ def purchasehistory():
                         raw = raw + '\n'
                         content = 'You have ordered %i:\n%s' % (len(r),raw)
             #Put infor to chatbot
-            return jsonify(
-                status=200,
-                replies=[{
-                    'type':'text',
-                    'content': ('%s') % (content)
-                }]
-            )
+            return content
+                #status=200,
+                #replies=[{
+                #    'type':'text',
+                #    'content': ('%s') % (content)
+                #}]
+            #)
         else:
-           return jsonify(
-            status=200,
-            replies=[{
-                'type':'text',
-                'content': 'Sorry, your customer ID is not correct, please try again!'
-            }]
-        ) 
+            content = 'Sorry, your customer ID is not correct, please try again!'
+            return content
+            #status=200,
+            #replies=[{
+            #    'type':'text',
+            #    'content': 'Sorry, your customer ID is not correct, please try again!'
+            #}]
+        #) 
     except:
-        return jsonify(
-            status=200,
-            replies=[{
-                'type':'text',
-                'content': 'Sorry, the information provided is not sufficient. Or your customer ID is not correct, please try again!'
-            }]
-        )
+        content = 'Sorry, the information provided is not sufficient. Or your customer ID is not correct, please try again!'
+        return content
+        #return jsonify(
+        #    status=200,
+        #    replies=[{
+        #        'type':'text',
+        #        'content': 'Sorry, the information provided is not sufficient. Or your customer ID is not correct, please try again!'
+        #    }]
+        #)
 
 @app.route('/errors', methods=['POST']) 
 def errors(): 
