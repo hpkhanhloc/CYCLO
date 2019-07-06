@@ -206,7 +206,7 @@ def purchasehistory():
     cursor = dataconn()
     #Fetch the ID
     data = json.loads(request.get_data().decode('utf-8'))
-    customerid = data['nlp']['entities']['number'][0]['raw']
+    customerid = data['conversation']['memory']['completed']['raw']
     #Query
     try:
         if int(customerid) in range(100000,100999):
