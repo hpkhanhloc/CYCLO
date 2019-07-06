@@ -55,7 +55,7 @@ def authentication():
     #Fetch the ID
     data = json.loads(request.get_data().decode('utf-8'))
     customerid = data['conversation']['memory']['completed']['raw']
-    authentication = data['nlp']['entities']['number'][0]['raw']
+    authentication = data['nlp']['source']
     #Query
     try:
         cursor.execute("SELECT Authentication FROM customers WHERE CustomerID ="+customerid+";") 
@@ -72,7 +72,7 @@ def authentication():
                 status=200,
                 replies=[{
                     'type':'text',
-                    'content': 'I\'m ready.'
+                    'content': 'Sucessful authentication.'
                 }]    
             )
         else: 
