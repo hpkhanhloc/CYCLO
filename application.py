@@ -37,9 +37,51 @@ def customer():
             status=200,
             replies=[{
                 'type':'text',
-                'content': 'CustomerID: %s \nFirst Name: %s \nLast Name: %s \nAddress: %s \nPhone: %s \nEmail: %s' % (r['id'], r['firstname'], r['lastname'], r['address'],r['phone'],r['email']),
+                'content': 'Hi, %s. Please input your authentication code to continue.' % (r['firstname'])
             }]    
         )
+    except:
+        return jsonify(
+                status=200,
+                replies=[{
+                    'type':'text',
+                    'content': 'Sorry, the information provided is not sufficient. Or your customer ID is not correct, please try again!'
+                }]    
+            )
+
+@app.route('/authentication',methods=['POST'])
+def authentication():
+    cursor = dataconn()
+    #Fetch the ID
+    data = json.loads(request.get_data().decode('utf-8'))
+    customerid = data['conversation']['memory']['identification'][0]['raw']
+    authentication = data['nlp']['entities']['number'][0]['raw']
+    #Query
+    try:
+        cursor.execute("SELECT authentication FROM customers WHERE CustomerID ="+customerid+";") 
+        row = cursor.fetchone()
+        while row:
+            x = {"authentication":str(row[0])}
+            row = cursor.fetchone()
+        j = json.dumps(x)
+        r = json.loads(j)
+        #Put infor to chatbot
+        if authentication == r['authentication']: 
+            return jsonify(
+                status=200,
+                replies=[{
+                    'type':'text',
+                    'content': 'I\'m ready.'
+                }]    
+            )
+        else: 
+            return jsonify(
+                status=200,
+                replies=[{
+                    'type':'text',
+                    'content': 'Your authentication is wrong.'
+                }]    
+            )
     except:
         return jsonify(
                 status=200,
