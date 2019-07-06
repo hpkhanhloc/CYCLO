@@ -54,7 +54,7 @@ def authentication():
     cursor = dataconn()
     #Fetch the ID
     data = json.loads(request.get_data().decode('utf-8'))
-    customerid = data['conversation']['memory']['completed'][0]['raw']
+    customerid = data['conversation']['memory']['completed']['raw']
     authentication = data['nlp']['entities']['number'][0]['raw']
     #Query
     try:
