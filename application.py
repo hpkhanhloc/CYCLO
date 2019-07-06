@@ -72,6 +72,7 @@ def authentication():
                 status=200,
                 replies=[{
                     'type':'text',
+                    'sentiment':'positive',
                     'content': 'Sucessful authentication.'
                 }]    
             )
@@ -80,6 +81,7 @@ def authentication():
                 status=200,
                 replies=[{
                     'type':'text',
+                    'sentiment':'negative',
                     'content': 'Your authentication is wrong.'
                 }]    
             )
