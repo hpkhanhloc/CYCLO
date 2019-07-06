@@ -67,15 +67,17 @@ def authentication():
         r = json.loads(j)
         check = r['authentication']
         #Put infor to chatbot
-        if authentication == check: 
+        if authentication == check:
+            result = purchasehistory() 
             return jsonify(
                 status=200,
                 replies=[{
                     'type':'text',
                     'sentiment':'positive',
-                    'content': 'Sucessful authentication.'
+                    'content': 'Sucessful authentication.\n %s' % (result)
                 }]    
             )
+        
         else: 
             return jsonify(
                 status=200,
