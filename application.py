@@ -7,6 +7,7 @@ import os
 app = Flask(__name__)
 port = '443'
 
+#This fuction is use to connect with database which stored on Azure
 def dataconn():
     server = 'cyclo.database.windows.net'
     database = 'CYCLO'
@@ -17,13 +18,19 @@ def dataconn():
     cursor = cnxn.cursor()
     return cursor
 
+# This functione return customer information to chatbot.
+# If there is valid information stored in database, this API will handle it and return to the bot.
+# The bot answer "Hi, customer name"
+# In contrast, cannot find information, the bot answer customer and ask them input again
 @app.route('/customer',methods=['POST'])
 def customer():
-    cursor = dataconn()
+    cursor = dataconn()                                                 #connect with database
+    
     #Fetch the ID
-    data = json.loads(request.get_data().decode('utf-8'))
+    data = json.loads(request.get_data().decode('utf-8'))               #load customerid from user's chat
     customerid = data['nlp']['entities']['number'][0]['raw']
-    #Query
+    
+    #Query database to find information
     try:
         cursor.execute("SELECT * FROM customers WHERE CustomerID ="+customerid+";") 
         row = cursor.fetchone()
@@ -32,15 +39,16 @@ def customer():
             row = cursor.fetchone()
         j = json.dumps(x)
         r = json.loads(j)
-        #Put infor to chatbot
+
+        #Put information to chatbot
         return jsonify(
             status=200,
             replies=[{
                 'type':'text',
-                'content': 'Hi, %s.' % (r['firstname'])
+                'content': 'Hi, %s.' % (r['firstname'])                 #This is the answer of chatbot
             }]    
         )
-    except:
+    except:                                                             #Through exception if information is invalid
         return jsonify(
                 status=200,
                 replies=[{
@@ -49,14 +57,19 @@ def customer():
                 }]    
             )
 
+# This function check user identity.
+# Each of user will have different authentication code.
+# The bot will ask and then pass the code to API then, API check on database either correct or not.
 @app.route('/authentication',methods=['POST'])
 def authentication():
-    cursor = dataconn()
-    #Fetch the ID
+    cursor = dataconn()                                                 #Connect to database
+    
+    #Fetch the customer ID and authentication
     data = json.loads(request.get_data().decode('utf-8'))
     customerid = data['conversation']['memory']['completed']['raw']
     authentication = data['nlp']['source']
-    #Query
+    
+    #Query database to find information
     try:
         cursor.execute("SELECT Authentication FROM customers WHERE CustomerID ="+customerid+";") 
         row = cursor.fetchone()
@@ -66,8 +79,9 @@ def authentication():
         j = json.dumps(x)
         r = json.loads(j)
         check = r['authentication']
+        
         #Put infor to chatbot
-        if authentication == check:
+        if authentication == check:                                     #authentication code correct
             result = purchasehistory() 
             return jsonify(
                 status=200,
@@ -78,7 +92,7 @@ def authentication():
                 }]    
             )
         
-        else: 
+        else:                                                           #chatbot answer wrong if authentication failed
             return jsonify(
                 status=200,
                 replies=[{
@@ -87,7 +101,7 @@ def authentication():
                     'content': 'Your authentication is wrong.'
                 }]    
             )
-    except:
+    except:                                                             #through exception in case invalid information
         return jsonify(
                 status=200,
                 replies=[{
@@ -96,13 +110,17 @@ def authentication():
                 }]    
             )
 
+# This function check order detail by orderid.
+# If user require check order, the bot will response by request orderid, then get it and sent to API to check in datasbase.
 @app.route('/orderbycode',methods=['POST'])
 def orderbycode():
-    cursor = dataconn()
+    cursor = dataconn()                                                 #connect database                         
+    
     #Fetch the ID
     data = json.loads(request.get_data().decode('utf-8'))
     orderid = data['nlp']['entities']['number'][0]['raw']
-    #Query
+    
+    #Query database to find information
     try:
         cursor.execute("""SELECT orders.OrderID, customers.FirstName, products.ProductDescription, orders.OrderDate, orders.OrderStatus 
         from orders,customers,products 
@@ -114,6 +132,7 @@ def orderbycode():
             row = cursor.fetchone()
         j = json.dumps(x)
         r = json.loads(j)
+        
         #Put infor to chatbot
         return jsonify(
             status=200,
@@ -122,7 +141,7 @@ def orderbycode():
                 'content': 'OrderID: %s \nName: %s \nProduct: %s \nOrder Date: %s \nStatus: %s' % (r['id'], r['name'], r['product'], r['date'],r['status']) 
             }]
         )
-    except:
+    except:                                                     #exception in case not valid form of orderid/ invalid information
         return jsonify(
             status=200,
             replies=[{
@@ -131,12 +150,18 @@ def orderbycode():
             }]    
         )
 
+# This function will list all available products to customer.
+# If the bot regconizes that users are looking for products, it will list available categories to user.
+# After user selection, the bot call API by this function and find all products in database belong to input categories.
+# Then, API return information to chatbot to display for customer.
 @app.route('/product',methods=['POST'])
 def product():
-    cursor = dataconn()
-    #Fetch the category
+    cursor = dataconn()                                             #connect database
+    
+    #Fetch the input category
     data = json.loads(request.get_data().decode('utf-8'))
     category = data['nlp']['entities']['productname'][0]['raw']
+    
     #Query
     try:
         if category in ('Touring Bike','Road Bike', 'Off Road Bike','Acessories','Electronic Bike'):
@@ -155,7 +180,8 @@ def product():
                     content = content + (i['descript'])
                 else:
                     content = content + i['descript'] + '\n'
-        #Put infor to chatbot
+        
+            #Put infor to chatbot
             return jsonify(
                 status=200,
                 replies=[{
@@ -163,7 +189,7 @@ def product():
                     'content': 'We have %i products in %s category:\n%s' % (len(r), category, content) 
                 }]
             )
-        else:
+        else:                                               #return this if user input not valid category
             return jsonify(
                 status=200,
                 replies=[{
@@ -171,7 +197,7 @@ def product():
                     'content': 'Sorry, the information provided is not sufficient. Please choose one of our categories!'
                 }]
             )
-    except:
+    except:                                                 #return this if user input not valid category
         return jsonify(
             status=200,
             replies=[{
@@ -180,12 +206,17 @@ def product():
             }]    
         )
 
+# This function will get weather information from open source -  openweathermap by call its API.
+# If the bot regconize that customer asking about weather information, it will ask user which city/location.
+# Then, is call this function and pass location into it, this function then call Openweather API get weather information.
+# Finally, put weather information back to chatbot and displays to user.
 @app.route('/weather',methods=['POST'])
 def weather():
-    #Fetch the location
+    #Fetch the location from chatbot conversation
     data = json.loads(request.get_data().decode('utf-8'))
     location = data['nlp']['entities']['location'][0]['raw']
-    #Fect the weather information
+    
+    #Fect the weather information from Openweather API
     try:
         r = requests.get("https://api.openweathermap.org/data/2.5/weather?q="+location+"&units=metric&appid=63879a9b19bc9fa80e75ca0adc836c7e")
         #Put infor to chatbot
@@ -196,7 +227,7 @@ def weather():
                 'content': 'The weather in %s is %s now,\nTemperature: %8.2f%s,\nPressure: %i hPa,\nHumidity: %i%%.' % (r.json()['name'], r.json()['weather'][0]['description'],r.json()['main']['temp'],chr(176)+'C', r.json()['main']['pressure'],r.json()['main']['humidity'])
         }]
     )
-    except:
+    except:                                             #Exception incase openweather can not find information.
         return jsonify(
             status=200,
             replies=[{
@@ -205,63 +236,6 @@ def weather():
         }]
     )
 
-@app.route('/purchasehistory',methods=['POST'])
-def purchasehistory():
-    cursor = dataconn()
-    #Fetch the ID
-    data = json.loads(request.get_data().decode('utf-8'))
-    customerid = data['conversation']['memory']['completed']['raw']
-    #Query
-    try:
-        if int(customerid) in range(100000,100999):
-            cursor.execute("SELECT orderID, products.productdescription, orderdate, orderstatus FROM orders,products WHERE CustomerID ="+customerid+" and orders.productid = products.productid;") 
-            row = cursor.fetchone()
-            thislist=[]
-            while row:
-                x = {"orderid":str(row[0]),"product":str(row[1]),"orderdate":str(row[2]),"orderstatus":str(row[3])}
-                thislist.append(x)
-                row = cursor.fetchone()
-            j = json.dumps(thislist)
-            r = json.loads(j)
-            content = ''
-            raw = ''
-            if len(r) == 0:
-                content = 'You have not ordered before.'
-            else:
-                for i in r:
-                    if i == r[-1]:
-                        content = content + 'OrderId: '+ i['orderid'] + '\n'+ 'Product: '+ i['product'] + '\n'+ 'Orderdate: '+ i['orderdate'] + '\n'+ 'Status: '+i['orderstatus']
-                    else:
-                        raw = raw + 'OrderId: '+ i['orderid'] + '\n'+ 'Product: '+ i['product'] + '\n'+ 'Orderdate: '+ i['orderdate'] + '\n'+ 'Status: '+i['orderstatus'] + '\n'
-                        raw = raw + '\n'
-                        content = 'You have ordered %i:\n%s' % (len(r),raw)
-            #Put infor to chatbot
-            return content
-                #status=200,
-                #replies=[{
-                #    'type':'text',
-                #    'content': ('%s') % (content)
-                #}]
-            #)
-        else:
-            content = 'Sorry, your customer ID is not correct, please try again!'
-            return content
-            #status=200,
-            #replies=[{
-            #    'type':'text',
-            #    'content': 'Sorry, your customer ID is not correct, please try again!'
-            #}]
-        #) 
-    except:
-        content = 'Sorry, the information provided is not sufficient. Or your customer ID is not correct, please try again!'
-        return content
-        #return jsonify(
-        #    status=200,
-        #    replies=[{
-        #        'type':'text',
-        #        'content': 'Sorry, the information provided is not sufficient. Or your customer ID is not correct, please try again!'
-        #    }]
-        #)
 
 @app.route('/errors', methods=['POST']) 
 def errors(): 
